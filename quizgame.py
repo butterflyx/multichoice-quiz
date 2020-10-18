@@ -32,15 +32,15 @@ class Quiz:
         self.questionsWrongAnswered = []
 
     def listGames(self):
-        self.gamesList = glob.glob("./topics/*.json")
+        self.gamesList = glob.glob("./quizzes/*.json")
         return self.gamesList
 
     def setGame(self, topic):
         # https://careerkarma.com/blog/python-check-if-file-exists/
         if os.path.exists(topic) and (topic in self.gamesList):
             self.topic = topic    
-        elif os.path.exists("./topics/"+topic+".json") and ("./topics/"+topic+".json" in self.gamesList):
-            self.topic = "./topics/"+topic+".json"
+        elif os.path.exists("./quizzes/"+topic+".json") and ("./quizzes/"+topic+".json" in self.gamesList):
+            self.topic = "./quizzes/"+topic+".json"
         else:
             raise QuizNotFound()
 
@@ -98,6 +98,11 @@ class Quiz:
         self.questionsLeft = len(self.questions)
         return self.questionsLeft
 
+    def getProgress(self):
+        p = int(round(100-((self.getQuestionsLeft() / self.getQuestionsTotal()) * 100)))
+        return p
+
+
     def askQuestion(self):
         answers = []
         keys = []
@@ -153,17 +158,18 @@ class Quiz:
 
     def printResults(self):
         questionsAnswered = self.getQuestionsTotal() - (self.getQuestionsLeft()+1) # +1 for current question
-        percent = int(round(len(self.questionsRightAnswered)/questionsAnswered * 100))
         print("")
         print("Your results:")
         print("~~~~~~~~~~~~~")
         print(f"You have answered {questionsAnswered} questions out of {self.getQuestionsTotal()} questions.")
-        print(f"And you got {len(self.questionsRightAnswered)} of {questionsAnswered} right, which is a {percent}% percentage.")
+        if questionsAnswered > 0:
+            percent = int(round(len(self.questionsRightAnswered)/questionsAnswered * 100))
+            print(f"And you got {len(self.questionsRightAnswered)} of {questionsAnswered} right, which is a {percent}% percentage.")
         print(f"")
         if self.questionsWrongAnswered != []:
             print("These questions should be reviewed:")
             for question in self.questionsWrongAnswered:
-                print("")
+                print("")s
                 print(f"Question:")
                 print(f"{question['question']}")
                 print("")
@@ -184,7 +190,7 @@ class Quiz:
         print("Starting the quiz now:")
         while (self.questionsLeft > 0):
             print("--------")
-            print(f"questions ({self.questionsLeft}/{self.questionsTotal}) ")
+            print(f"progress: {self.getProgress()} % ")
             self.getQuestion()
             answer = self.askQuestion()
             if answer == False or answer == []:
