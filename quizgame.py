@@ -1,9 +1,34 @@
 #!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+
+'''
+A quiz game for multiple choice tests
+@author: butterflyx <info@butterflyx.com>
+'''
+
 import json
 import time
 import random
 import glob
 import os
+import argparse
+
+
+
+class bcolors:
+    HEADER = '\033[95m'
+    OKBLUE = '\033[94m'
+    OKGREEN = '\033[92m'
+    WARNING = '\033[93m'
+    FAIL = '\033[91m'
+    ENDC = '\033[0m'
+    BOLD = '\033[1m'
+    UNDERLINE = '\033[4m'
+""" parser = argparse.ArgumentParser(description='this is a general description of the purpose of this file')
+parser.add_argument('number', metavar='N', type=int, help='just a number required to pass as arg')
+args = parser.parse_args()
+ """
+
 
 class Quiz:
     def __init__(self):
@@ -46,10 +71,10 @@ class Quiz:
 
         game = self.readGameFile()
 
-        for chapter in game:
+        for chapter in game["quiz"]:
             self.chapters.append(chapter)
             #print(f"Chapter: {chapter}")
-            for question in game[chapter]:
+            for question in game["quiz"][chapter]:
                 quizquestion = {}
                 #print(f"Question-Nr: {question}")
                 self.questionsTotal += 1
@@ -57,14 +82,14 @@ class Quiz:
                 quizquestion["questionnr"] = question
                 quizquestion["timesRightAnswered"] = 0
                 quizquestion["userAnswers"] = []
-                quizquestion["question"] = game[chapter][question]["question"]
+                quizquestion["question"] = game["quiz"][chapter][question]["question"]
                 # shuffle possible answers as well
                 # https://stackoverflow.com/questions/19895028/randomly-shuffling-a-dictionary-in-python
-                keys = list(game[chapter][question]["answers"].keys())
+                keys = list(game["quiz"][chapter][question]["answers"].keys())
                 random.shuffle(keys)
-                quizquestion["answers"] = [(key, game[chapter][question]["answers"][key]) for key in keys]
+                quizquestion["answers"] = [(key, game["quiz"][chapter][question]["answers"][key]) for key in keys]
                 # quizquestion["answers"] = game[chapter][question]["answers"]
-                quizquestion["right"] = game[chapter][question]["right"]
+                quizquestion["right"] = game["quiz"][chapter][question]["right"]
                 self.questions.append(quizquestion)
         # shuffle the questions
         random.shuffle(self.questions)
@@ -136,7 +161,7 @@ class Quiz:
                     print("Invalid choice. Try again")
                 options = list(sorted(set(keys).difference(answers)))
             return answers    
-        except KeyboardInterrupt as e:
+        except KeyboardInterrupt:
             choice = input("\n\nDo you want to interrupt the quiz? (y/n) : ")
             if choice.lower() == "y":
                 return False
@@ -169,7 +194,7 @@ class Quiz:
         if self.questionsWrongAnswered != []:
             print("These questions should be reviewed:")
             for question in self.questionsWrongAnswered:
-                print("")s
+                print("")
                 print(f"Question:")
                 print(f"{question['question']}")
                 print("")
@@ -193,12 +218,15 @@ class Quiz:
             print(f"progress: {self.getProgress()} % ")
             self.getQuestion()
             answer = self.askQuestion()
-            if answer == False or answer == []:
+            if answer == False or answer == [] or type(answer) is not list:
                 break
             else:
                 self.validateAnswer(answer)
         self.printResults()
         print("Thank you for taking the quiz! Bye.")
+        exit(0)
+
+
 
 class QuizNotFound(Exception):
     pass      
@@ -209,3 +237,11 @@ class QuizNotFound(Exception):
 if __name__ == "__main__":
     myquiz = Quiz()
     myquiz.playQuiz("bsi")
+
+
+
+
+""" 
+if __name__ == "__main__":
+	main(args.number)
+    print(f"{bcolors.OKGREEN}Alright, colored output as well!{bcolors.ENDC}") """
