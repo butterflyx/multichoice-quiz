@@ -50,6 +50,9 @@ A quiz game for multiple choice tests
         # limit of questions to ask
         self.limit = 0
 
+        # threshold to pass the quiz; default 100% answers must be right
+        self.threshold = 100
+
 
     def listGames(self):
         self.gamesList = glob.glob("./quizzes/*.json")
@@ -64,41 +67,43 @@ A quiz game for multiple choice tests
         else:
             raise QuizNotFound()
 
-        if limit:
-            self.limit = limit
-
         game = self.readGameFile()
 
         for chapter in game["quiz"]:
             self.chapters.append(chapter)
             #print(f"Chapter: {chapter}")
             for question in game["quiz"][chapter]:
-                if self.limit > 0 and len(self.questions) >= self.limit:
-                    break
-                else:
-                    quizquestion = {}
-                    #print(f"Question-Nr: {question}")
-                    self.questionsTotal += 1
-                    quizquestion["chapter"] = chapter
-                    quizquestion["questionnr"] = question
-                    quizquestion["timesRightAnswered"] = 0
-                    quizquestion["userAnswers"] = []
-                    quizquestion["question"] = game["quiz"][chapter][question]["question"]
-                    # shuffle possible answers as well
-                    # https://stackoverflow.com/questions/19895028/randomly-shuffling-a-dictionary-in-python
-                    keys = list(game["quiz"][chapter][question]["answers"].keys())
-                    random.shuffle(keys)
-                    quizquestion["answers"] = [(key, game["quiz"][chapter][question]["answers"][key]) for key in keys]
-                    # quizquestion["answers"] = game[chapter][question]["answers"]
-                    quizquestion["right"] = game["quiz"][chapter][question]["right"]
-                    self.questions.append(quizquestion)
+                quizquestion = {}
+                #print(f"Question-Nr: {question}")
+                self.questionsTotal += 1
+                quizquestion["chapter"] = chapter
+                quizquestion["questionnr"] = question
+                quizquestion["timesRightAnswered"] = 0
+                quizquestion["userAnswers"] = []
+                quizquestion["question"] = game["quiz"][chapter][question]["question"]
+                # shuffle possible answers as well
+                # https://stackoverflow.com/questions/19895028/randomly-shuffling-a-dictionary-in-python
+                keys = list(game["quiz"][chapter][question]["answers"].keys())
+                random.shuffle(keys)
+                quizquestion["answers"] = [(key, game["quiz"][chapter][question]["answers"][key]) for key in keys]
+                # quizquestion["answers"] = game[chapter][question]["answers"]
+                quizquestion["right"] = game["quiz"][chapter][question]["right"]
+                self.questions.append(quizquestion)
         # shuffle the questions
         random.shuffle(self.questions)
+        print(Colors.blue(f"{self.questionsTotal} questions found in {self.topic}"))
+
+        # pop questions above limit after shuffling
+        if limit:
+            self.limit = limit
+            while self.limit > 0 and len(self.questions) > self.limit:
+                self.questions.pop(0)
+            self.questionsTotal = len(self.questions)
+            print(Colors.blue(f"This quiz is limited to {self.questionsTotal} random questions."))
 
         # initially all questions are left as well
         self.questionsLeft = self.questionsTotal
 
-        print(Colors.blue(f"{self.questionsTotal} questions found in {self.topic}"))
         return True
 
     def readGameFile(self):
