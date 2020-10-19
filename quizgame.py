@@ -1,11 +1,6 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-'''
-A quiz game for multiple choice tests
-@author: butterflyx <info@butterflyx.com>
-'''
-
 import json
 import time
 import random
@@ -14,23 +9,18 @@ import os
 import argparse
 
 
-
-class bcolors:
-    HEADER = '\033[95m'
-    OKBLUE = '\033[94m'
-    OKGREEN = '\033[92m'
-    WARNING = '\033[93m'
-    FAIL = '\033[91m'
-    ENDC = '\033[0m'
-    BOLD = '\033[1m'
-    UNDERLINE = '\033[4m'
-""" parser = argparse.ArgumentParser(description='this is a general description of the purpose of this file')
-parser.add_argument('number', metavar='N', type=int, help='just a number required to pass as arg')
-args = parser.parse_args()
- """
-
-
 class Quiz:
+    BANNER = r'''
+                  _ _   _      _           _                            _     
+  _ __ ___  _   _| | |_(_) ___| |__   ___ (_) ___ ___        __ _ _   _(_)____
+ | '_ ` _ \| | | | | __| |/ __| '_ \ / _ \| |/ __/ _ \_____ / _` | | | | |_  /
+ | | | | | | |_| | | |_| | (__| | | | (_) | | (_|  __/_____| (_| | |_| | |/ / 
+ |_| |_| |_|\__,_|_|\__|_|\___|_| |_|\___/|_|\___\___|      \__, |\__,_|_/___|
+                                                               |_|            
+A quiz game for multiple choice tests
+@author: butterflyx <info@butterflyx.com>
+'''
+
     def __init__(self):
         # list available json files with quiz data
         self.gamesList = []
@@ -40,6 +30,7 @@ class Quiz:
         self.rawGame = None
         # list of chapters in game
         self.chapters = []
+
         # number of questions available (to calc eg pass limit)
         self.questionsTotal = 0
         # number of questions left in stack
@@ -56,11 +47,15 @@ class Quiz:
         # if simulating a test to show a list of questions that should be repeated
         self.questionsWrongAnswered = []
 
+        # limit of questions to ask
+        self.limit = 0
+
+
     def listGames(self):
         self.gamesList = glob.glob("./quizzes/*.json")
         return self.gamesList
 
-    def setGame(self, topic):
+    def setGame(self, topic, limit):
         # https://careerkarma.com/blog/python-check-if-file-exists/
         if os.path.exists(topic) and (topic in self.gamesList):
             self.topic = topic    
@@ -69,35 +64,41 @@ class Quiz:
         else:
             raise QuizNotFound()
 
+        if limit:
+            self.limit = limit
+
         game = self.readGameFile()
 
         for chapter in game["quiz"]:
             self.chapters.append(chapter)
             #print(f"Chapter: {chapter}")
             for question in game["quiz"][chapter]:
-                quizquestion = {}
-                #print(f"Question-Nr: {question}")
-                self.questionsTotal += 1
-                quizquestion["chapter"] = chapter
-                quizquestion["questionnr"] = question
-                quizquestion["timesRightAnswered"] = 0
-                quizquestion["userAnswers"] = []
-                quizquestion["question"] = game["quiz"][chapter][question]["question"]
-                # shuffle possible answers as well
-                # https://stackoverflow.com/questions/19895028/randomly-shuffling-a-dictionary-in-python
-                keys = list(game["quiz"][chapter][question]["answers"].keys())
-                random.shuffle(keys)
-                quizquestion["answers"] = [(key, game["quiz"][chapter][question]["answers"][key]) for key in keys]
-                # quizquestion["answers"] = game[chapter][question]["answers"]
-                quizquestion["right"] = game["quiz"][chapter][question]["right"]
-                self.questions.append(quizquestion)
+                if self.limit > 0 and len(self.questions) >= self.limit:
+                    break
+                else:
+                    quizquestion = {}
+                    #print(f"Question-Nr: {question}")
+                    self.questionsTotal += 1
+                    quizquestion["chapter"] = chapter
+                    quizquestion["questionnr"] = question
+                    quizquestion["timesRightAnswered"] = 0
+                    quizquestion["userAnswers"] = []
+                    quizquestion["question"] = game["quiz"][chapter][question]["question"]
+                    # shuffle possible answers as well
+                    # https://stackoverflow.com/questions/19895028/randomly-shuffling-a-dictionary-in-python
+                    keys = list(game["quiz"][chapter][question]["answers"].keys())
+                    random.shuffle(keys)
+                    quizquestion["answers"] = [(key, game["quiz"][chapter][question]["answers"][key]) for key in keys]
+                    # quizquestion["answers"] = game[chapter][question]["answers"]
+                    quizquestion["right"] = game["quiz"][chapter][question]["right"]
+                    self.questions.append(quizquestion)
         # shuffle the questions
         random.shuffle(self.questions)
 
         # initially all questions are left as well
         self.questionsLeft = self.questionsTotal
 
-        print(f"{self.questionsTotal} questions found in {self.topic}")
+        print(Colors.blue(f"{self.questionsTotal} questions found in {self.topic}"))
         return True
 
     def readGameFile(self):
@@ -136,11 +137,11 @@ class Quiz:
         print("")
         print(f"Category: {self.question['chapter']}")
         print("")
-        print(f"Question: {self.question['question']}")
+        print(Colors.blue("Question:")+f" {self.question['question']}")
         print("")
         for key, answer in self.question['answers']:
             keys.append(key.upper())
-            print(f"({key}) {answer}") 
+            print(Colors.blue(f"({key}) ")+f"{answer}") 
         print("")
         print(f">> ")
         options = list(sorted(set(keys).difference(answers)))
@@ -158,11 +159,11 @@ class Quiz:
                     securityQuestion = True
                     print("Sure you have all answers marked? Press Enter again to finish this question.")
                 else:
-                    print("Invalid choice. Try again")
+                    print(Colors.red("Invalid choice. Try again"))
                 options = list(sorted(set(keys).difference(answers)))
             return answers    
         except KeyboardInterrupt:
-            choice = input("\n\nDo you want to interrupt the quiz? (y/n) : ")
+            choice = input(Colors.yellow("\n\nDo you want to interrupt the quiz? (y/n) : "))
             if choice.lower() == "y":
                 return False
             else:
@@ -184,7 +185,7 @@ class Quiz:
     def printResults(self):
         questionsAnswered = self.getQuestionsTotal() - (self.getQuestionsLeft()+1) # +1 for current question
         print("")
-        print("Your results:")
+        print(Colors.green("Your results:"))
         print("~~~~~~~~~~~~~")
         print(f"You have answered {questionsAnswered} questions out of {self.getQuestionsTotal()} questions.")
         if questionsAnswered > 0:
@@ -192,27 +193,30 @@ class Quiz:
             print(f"And you got {len(self.questionsRightAnswered)} of {questionsAnswered} right, which is a {percent}% percentage.")
         print(f"")
         if self.questionsWrongAnswered != []:
-            print("These questions should be reviewed:")
+            print(Colors.yellow("These questions should be reviewed:"))
             for question in self.questionsWrongAnswered:
                 print("")
                 print(f"Question:")
-                print(f"{question['question']}")
+                print(Colors.blue(question['question']))
                 print("")
                 print("possible answers:")
                 for key, answer in sorted(question["answers"]):
-                    print(f"({key}) {answer}")
+                    print("("+Colors.blue(key)+f") {answer}")
                 print("")
-                print(f"Your answers: {question['useranswers']}")
-                print(f"right answers: {question['right']}")
+                print(f"Your answers: "+Colors.red(question['useranswers'])+"")
+                print(f"right answers: "+Colors.green(question['right'])+"")
                 print("--------")
             print("")
 
 
     
-    def playQuiz(self, game):
+    def playQuiz(self, args):
+        #print(f"quizname: {args.quizname} ; l: {args.l} ; t: {args.t}")
         self.listGames()
-        self.setGame(game)
-        print("Starting the quiz now:")
+        self.setGame(args.quizname, args.l)
+        exit(0)
+        #self.setThreshold(args.t)
+        print(Colors.green("Starting the quiz now:"))
         while (self.questionsLeft > 0):
             print("--------")
             print(f"progress: {self.getProgress()} % ")
@@ -223,7 +227,7 @@ class Quiz:
             else:
                 self.validateAnswer(answer)
         self.printResults()
-        print("Thank you for taking the quiz! Bye.")
+        print(Colors.green("Thank you for taking the quiz! Bye.\n"))
         exit(0)
 
 
@@ -232,16 +236,60 @@ class QuizNotFound(Exception):
     pass      
 
 
+class Colors:
+    HEADER = '\033[95m'
+    OKBLUE = '\033[94m'
+    OKGREEN = '\033[92m'
+    WARNING = '\033[93m'
+    FAIL = '\033[91m'
+    ENDC = '\033[0m'
+    BOLD = '\033[1m'
+    UNDERLINE = '\033[4m'
+
+    @staticmethod
+    def blue(string):
+        return Colors.OKBLUE+str(string)+Colors.ENDC
+
+    @staticmethod
+    def green(string):
+        return Colors.OKGREEN+str(string)+Colors.ENDC
+
+    @staticmethod
+    def yellow(string):
+        return Colors.WARNING+str(string)+Colors.ENDC
+
+    @staticmethod
+    def red(string):
+        return Colors.FAIL+str(string)+Colors.ENDC
+
+    @staticmethod
+    def bold(string):
+        return Colors.BOLD+str(string)+Colors.ENDC
+    
+
+
+
+USAGE = f"""
+-t : threshold for passing the quiz in percent. Show success or failure message at the end.
+-l : limit the number of questions in a quiz. No effect if number of available question less then limit.
+"""
 
 
 if __name__ == "__main__":
     myquiz = Quiz()
-    myquiz.playQuiz("bsi")
-
-
+    print(Colors.blue(myquiz.BANNER))
+    print("")
+    parser = argparse.ArgumentParser(formatter_class=argparse.MetavarTypeHelpFormatter)
+    parser.add_argument('quizname', type=str, help='name of the quiz you want to play')
+    parser.add_argument('--t', nargs='?', type=int, help='Threshold for passing the quiz in percent (rounded). Show success or failure message at the end.')
+    parser.add_argument('--l', nargs='?', type=int, help='limit the number of questions in a quiz. No effect if number of available question less then limit.')
+    #parser.print_help()
+    args = parser.parse_args()
+    myquiz.playQuiz(args)
+    print(len(myquiz.questions))
 
 
 """ 
 if __name__ == "__main__":
 	main(args.number)
-    print(f"{bcolors.OKGREEN}Alright, colored output as well!{bcolors.ENDC}") """
+"""

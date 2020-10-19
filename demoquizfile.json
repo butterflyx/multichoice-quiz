@@ -1,21 +1,22 @@
 {
 	"meta" : {
+        "titel" : "<the title of the quiz, shown at the start of the quiz>",
 		"author" : "<your name>; <your@email.address>",
 		"licence" : "<copyright or eg GNU public licence string>",
-		"homepage" : "<https://your.url.com",
+		"homepage" : "<https://your.url.com>",
 		"contributors" : [
-            "<Jim>",
+            "<Jim> <jim@jim.com>",
             "<Bob>",
-            "<Alice"
+            "<Alice>"
         ]
 	},
 	"quiz" : {
 		"<enter chapter name>" : {
 			"<enter question id>" : {
-			"question" : "<question itself here>",
+			"question" : "<question itself here>?",
 			"answers" : { 
-					"A" : "<always>",
-					"B" : "<enter>",
+					"A" : "<not>",
+					"B" : "<always>",
 					"C" : "<four>",
 					"D" : "<alternatives>" 
 				},
