@@ -49,10 +49,36 @@ A quiz game for multiple choice tests
 
         # limit of questions to ask
         self.limit = 0
-
         # threshold to pass the quiz; default 100% answers must be right
         self.threshold = 100
 
+        # set to true if Strg+C to stop quiz
+        self.breakFlag = False
+
+        self.failedBanner = """
+                                                                   
+            @@@@@@@@   @@@@@@   @@@  @@@       @@@@@@@@  @@@@@@@   
+            @@@@@@@@  @@@@@@@@  @@@  @@@       @@@@@@@@  @@@@@@@@  
+            @@!       @@!  @@@  @@!  @@!       @@!       @@!  @@@  
+            !@!       !@!  @!@  !@!  !@!       !@!       !@!  @!@  
+            @!!!:!    @!@!@!@!  !!@  @!!       @!!!:!    @!@  !@!  
+            !!!!!:    !!!@!!!!  !!!  !!!       !!!!!:    !@!  !!!  
+            !!:       !!:  !!!  !!:  !!:       !!:       !!:  !!!  
+            :!:       :!:  !:!  :!:   :!:      :!:       :!:  !:!  
+             ::       ::   :::   ::   :: ::::   :: ::::   :::: ::  
+             :         :   : :  :    : :: : :  : :: ::   :: :  :   
+                                                                   
+        """
+
+        self.passedBanner = """
+         :::::::::    :::     ::::::::  :::::::: :::::::::::::::::::  
+         :+:    :+: :+: :+:  :+:    :+::+:    :+::+:       :+:    :+: 
+         +:+    +:++:+   +:+ +:+       +:+       +:+       +:+    +:+ 
+         +#++:++#++#++:++#++:+#++:++#+++#++:++#+++#++:++#  +#+    +:+ 
+         +#+      +#+     +#+       +#+       +#++#+       +#+    +#+ 
+         #+#      #+#     #+##+#    #+##+#    #+##+#       #+#    #+# 
+         ###      ###     ### ########  ######## ###################  
+        """
 
     def listGames(self):
         self.gamesList = glob.glob("./quizzes/*.json")
@@ -170,6 +196,7 @@ A quiz game for multiple choice tests
         except KeyboardInterrupt:
             choice = input(Colors.yellow("\n\nDo you want to interrupt the quiz? (y/n) : "))
             if choice.lower() == "y":
+                self.breakFlag = True
                 return False
             else:
                 print("OK, then try again.")
@@ -187,15 +214,29 @@ A quiz game for multiple choice tests
         self.question = []
         return False
 
+    def setThreshold(self, threshold):
+        if threshold <= 100:
+            self.threshold = threshold
+        return self.threshold
+
+
     def printResults(self):
-        questionsAnswered = self.getQuestionsTotal() - (self.getQuestionsLeft()+1) # +1 for current question
+        if self.breakFlag:
+            qleft = self.getQuestionsLeft()+1 # +1 for current question
+        else:
+            qleft = self.getQuestionsLeft()
+        questionsAnswered = self.getQuestionsTotal() - qleft
         print("")
         print(Colors.green("Your results:"))
         print("~~~~~~~~~~~~~")
         print(f"You have answered {questionsAnswered} questions out of {self.getQuestionsTotal()} questions.")
         if questionsAnswered > 0:
             percent = int(round(len(self.questionsRightAnswered)/questionsAnswered * 100))
-            print(f"And you got {len(self.questionsRightAnswered)} of {questionsAnswered} right, which is a {percent}% percentage.")
+            print(f"And you got {len(self.questionsRightAnswered)} of {questionsAnswered} right, which is a {percent}% percentage (minimum {self.threshold}%).")
+            if percent >= self.threshold:
+                print(Colors.green(self.passedBanner))
+            else:
+                print(Colors.red(self.failedBanner))
         print(f"")
         if self.questionsWrongAnswered != []:
             print(Colors.yellow("These questions should be reviewed:"))
@@ -213,14 +254,17 @@ A quiz game for multiple choice tests
                 print("--------")
             print("")
 
+        
 
+        
     
     def playQuiz(self, args):
         #print(f"quizname: {args.quizname} ; l: {args.l} ; t: {args.t}")
         self.listGames()
         self.setGame(args.quizname, args.l)
-        exit(0)
-        #self.setThreshold(args.t)
+        if args.t:
+            self.setThreshold(args.t)
+        print("")
         print(Colors.green("Starting the quiz now:"))
         while (self.questionsLeft > 0):
             print("--------")
@@ -291,10 +335,3 @@ if __name__ == "__main__":
     #parser.print_help()
     args = parser.parse_args()
     myquiz.playQuiz(args)
-    print(len(myquiz.questions))
-
-
-""" 
-if __name__ == "__main__":
-	main(args.number)
-"""
