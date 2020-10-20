@@ -351,13 +351,6 @@ class Colors:
     
 
 
-
-USAGE = f"""
--t : threshold for passing the quiz in percent. Show success or failure message at the end.
--l : limit the number of questions in a quiz. No effect if number of available question less then limit.
-"""
-
-
 if __name__ == "__main__":
     myquiz = Quiz()
     myquiz.clear()
