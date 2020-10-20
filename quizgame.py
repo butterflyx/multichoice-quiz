@@ -7,6 +7,8 @@ import random
 import glob
 import os
 import argparse
+# import call method from subprocess module 
+from subprocess import call 
 
 
 class Quiz:
@@ -159,6 +161,17 @@ A quiz game for multiple choice tests
         p = int(round(100-((self.getQuestionsLeft() / self.getQuestionsTotal()) * 100)))
         return p
 
+    def printProgressbar(self, prog=None):
+        progress =  prog if prog != None else self.getProgress()
+        barlevel = int(str(progress*0.1)[:1]) # get first digit
+        blanks = (10-barlevel)
+        print("[ "+("##"*barlevel)+("  "*blanks)+" ]")
+
+    # define clear function ; from https://www.geeksforgeeks.org/clear-screen-python/
+    def clear(self): 
+        # check and make call for specific operating system 
+        _ = call('clear' if os.name =='posix' else 'cls') 
+
 
     def askQuestion(self):
         answers = []
@@ -181,16 +194,19 @@ A quiz game for multiple choice tests
                 choice = input(f"Enter choice {options} or hit Enter to finish question: ")
                 if choice.upper() in options:
                     answers.append(choice.upper())
-                    print("Any other answer you want to check?")               
+                    print(Colors.blue("Any other answer you want to check?"))
+                    securityQuestion = False          
                 elif choice.upper() in answers:
-                    print(f"you have already marked answer ({choice}) as true. Try again or press enter if no other answer is right.")
+                    print(Colors.yellow(f"you have already marked answer ({choice}) as true. Try again or press enter if no other answer is right."))
+                    securityQuestion = False
                 elif choice == "" and securityQuestion == True:
                     return answers
                 elif choice == "" and securityQuestion == False:
                     securityQuestion = True
-                    print("Sure you have all answers marked? Press Enter again to finish this question.")
+                    print(Colors.blue("Sure you have all answers marked? Press Enter again to finish this question."))
                 else:
                     print(Colors.red("Invalid choice. Try again"))
+                    securityQuestion = False
                 options = list(sorted(set(keys).difference(answers)))
             return answers    
         except KeyboardInterrupt:
@@ -215,8 +231,7 @@ A quiz game for multiple choice tests
         return False
 
     def setThreshold(self, threshold):
-        if threshold <= 100:
-            self.threshold = threshold
+        self.threshold = threshold if threshold <= 100 else self.threshold
         return self.threshold
 
 
@@ -267,16 +282,35 @@ A quiz game for multiple choice tests
         print("")
         print(Colors.green("Starting the quiz now:"))
         while (self.questionsLeft > 0):
+            self.clear
             print("--------")
             print(f"progress: {self.getProgress()} % ")
+            self.printProgressbar()
             self.getQuestion()
             answer = self.askQuestion()
             if answer == False or answer == [] or type(answer) is not list:
                 break
             else:
                 self.validateAnswer(answer)
+            self.clear()
         self.printResults()
-        print(Colors.green("Thank you for taking the quiz! Bye.\n"))
+        print(Colors.green("Thank you for taking the quiz!"))
+        print("")
+        print("~~~~~~~~~~")
+        print(f"{self.rawGame['meta']['title']}")
+        print("~~~~~~~~~~")
+        print(f"brought to you by: {self.rawGame['meta']['author']}")
+        print("")
+        if self.rawGame["meta"]["contributors"] != []:
+            print("with contributions by:")
+            for supporter in self.rawGame["meta"]["contributors"]:
+                print(f"{supporter}")
+        print("")
+        print(f"licence: {self.rawGame['meta']['licence']}")
+        print("")
+        print(f"please visit {self.rawGame['meta']['homepage']} for more information.")
+        print("")
+        print("Bye.\n")
         exit(0)
 
 
@@ -326,6 +360,7 @@ USAGE = f"""
 
 if __name__ == "__main__":
     myquiz = Quiz()
+    myquiz.clear()
     print(Colors.blue(myquiz.BANNER))
     print("")
     parser = argparse.ArgumentParser(formatter_class=argparse.MetavarTypeHelpFormatter)

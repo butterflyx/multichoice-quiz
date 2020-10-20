@@ -3,8 +3,8 @@ A quiz game for multiple choice tests
 
 ## roadmap
 
-- [add] threshold in % for passing the quiz
-- [add] learning mode: repeat a question before it is considered as answered correctly
+- [x] [add] threshold in % for passing the quiz
+- [ ] [add] learning mode: repeat a question before it is considered as answered correctly
 
 
 
