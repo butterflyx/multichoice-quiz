@@ -83,10 +83,12 @@ A quiz game for multiple choice tests
         """
 
     def listGames(self):
+        """ list all available quizzes in subfolder 'quizzes' """
         self.gamesList = glob.glob("./quizzes/*.json")
         return self.gamesList
 
     def setGame(self, topic, limit):
+        """ load the raw quiz data into memory and prepare quiz to play """
         # https://careerkarma.com/blog/python-check-if-file-exists/
         if os.path.exists(topic) and (topic in self.gamesList):
             self.topic = topic    
@@ -135,6 +137,7 @@ A quiz game for multiple choice tests
         return True
 
     def readGameFile(self):
+        """ open and read the file with the quiz """
         try:
             with open(self.topic, "r") as json_file:
                 self.rawGame = json.load(json_file)
@@ -144,6 +147,7 @@ A quiz game for multiple choice tests
         return self.rawGame
 
     def getQuestion(self):
+        """ get one question out of the heap """
         # take the first question of the randomized array
         self.question = self.questions.pop(0)
         # update remaining questions
@@ -151,17 +155,21 @@ A quiz game for multiple choice tests
         return self.question
 
     def getQuestionsTotal(self):
+        """ get total number of questions in quiz """
         return self.questionsTotal
 
     def getQuestionsLeft(self):
+        """ get number of questions in quiz not yet asked """
         self.questionsLeft = len(self.questions)
         return self.questionsLeft
 
     def getProgress(self):
+        """ calculates the percentage of answered questions """
         p = int(round(100-((self.getQuestionsLeft() / self.getQuestionsTotal()) * 100)))
         return p
 
     def printProgressbar(self, prog=None):
+        """ visualize the percentage of answered questions """
         progress =  prog if prog != None else self.getProgress()
         barlevel = int(str(progress*0.1)[:1]) # get first digit
         blanks = (10-barlevel)
@@ -169,11 +177,13 @@ A quiz game for multiple choice tests
 
     # define clear function ; from https://www.geeksforgeeks.org/clear-screen-python/
     def clear(self): 
+        """ clears screen """
         # check and make call for specific operating system 
         _ = call('clear' if os.name =='posix' else 'cls') 
 
 
     def askQuestion(self):
+        """ prints the questions as well as possible answers and awaits input(s) """
         answers = []
         keys = []
         securityQuestion = False
@@ -219,6 +229,7 @@ A quiz game for multiple choice tests
                 self.askQuestion()
 
     def validateAnswer(self, answers):
+        """ check if answer given was right """
         if sorted(answers) == sorted(self.question['right']):
             #print(f"Right! {answers} == {self.question['right']}")
             self.questionsRightAnswered.append(self.question)
@@ -231,15 +242,14 @@ A quiz game for multiple choice tests
         return False
 
     def setThreshold(self, threshold):
+        """ set the minimum amount of right answers to pass the quiz """
         self.threshold = threshold if threshold <= 100 else self.threshold
         return self.threshold
 
 
     def printResults(self):
-        if self.breakFlag:
-            qleft = self.getQuestionsLeft()+1 # +1 for current question
-        else:
-            qleft = self.getQuestionsLeft()
+        """ print the results of the quiz """
+        qleft = self.getQuestionsLeft()+1 if self.breakFlag else self.getQuestionsLeft() # +1 for current question
         questionsAnswered = self.getQuestionsTotal() - qleft
         print("")
         print(Colors.green("Your results:"))
@@ -274,6 +284,7 @@ A quiz game for multiple choice tests
         
     
     def playQuiz(self, args):
+        """ take the quiz """
         #print(f"quizname: {args.quizname} ; l: {args.l} ; t: {args.t}")
         self.listGames()
         self.setGame(args.quizname, args.l)
