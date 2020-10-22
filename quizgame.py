@@ -51,8 +51,8 @@ A quiz game for multiple choice tests
 
         # limit of questions to ask
         self.limit = 0
-        # threshold to pass the quiz; default 100% answers must be right
-        self.threshold = 100
+        # threshold to pass the quiz; show banners only if set
+        self.threshold = None
 
         # set to true if Strg+C to stop quiz
         self.breakFlag = False
@@ -173,7 +173,10 @@ A quiz game for multiple choice tests
         progress =  prog if prog != None else self.getProgress()
         barlevel = int(str(progress*0.1)[:1]) # get first digit
         blanks = (10-barlevel)
-        print("[ "+("##"*barlevel)+("  "*blanks)+" ]")
+        if barlevel < 5:
+            print("[ "+Colors.highlight_lightgreen(("##"*barlevel))+Colors.highlight_gray(("  "*blanks))+" ]")
+        else:
+            print("[ "+Colors.highlight_green(("##"*barlevel))+Colors.highlight_gray(("  "*blanks))+" ]")
 
     # define clear function ; from https://www.geeksforgeeks.org/clear-screen-python/
     def clear(self): 
@@ -228,7 +231,7 @@ A quiz game for multiple choice tests
                 print("OK, then try again.")
                 self.askQuestion()
 
-    def validateAnswer(self, answers):
+    def validateAnswer(self, answers) -> bool:
         """ check if answer given was right """
         if sorted(answers) == sorted(self.question['right']):
             #print(f"Right! {answers} == {self.question['right']}")
@@ -241,9 +244,9 @@ A quiz game for multiple choice tests
         self.question = []
         return False
 
-    def setThreshold(self, threshold):
+    def setThreshold(self, threshold) -> int:
         """ set the minimum amount of right answers to pass the quiz """
-        self.threshold = threshold if threshold <= 100 else self.threshold
+        self.threshold = threshold if threshold <= 100 else 100
         return self.threshold
 
 
@@ -257,8 +260,8 @@ A quiz game for multiple choice tests
         print(f"You have answered {questionsAnswered} questions out of {self.getQuestionsTotal()} questions.")
         if questionsAnswered > 0:
             percent = int(round(len(self.questionsRightAnswered)/questionsAnswered * 100))
-            print(f"And you got {len(self.questionsRightAnswered)} of {questionsAnswered} right, which is a {percent}% percentage (minimum {self.threshold}%).")
-            if percent >= self.threshold:
+            print(f"And you got {len(self.questionsRightAnswered)} of {questionsAnswered} right, which is a {percent}% percentage (minimum %: {self.threshold}).")
+            if percent >= self.threshold and self.threshold != None:
                 print(Colors.green(self.passedBanner))
             else:
                 print(Colors.red(self.failedBanner))
@@ -267,7 +270,7 @@ A quiz game for multiple choice tests
             print(Colors.yellow("These questions should be reviewed:"))
             for question in self.questionsWrongAnswered:
                 print("")
-                print(f"Question:")
+                print(f"{question['chapter']} - question {question['questionnr']} :")
                 print(Colors.blue(question['question']))
                 print("")
                 print("possible answers:")
@@ -291,9 +294,10 @@ A quiz game for multiple choice tests
         if args.t:
             self.setThreshold(args.t)
         print("")
-        print(Colors.green("Starting the quiz now:"))
+        print(Colors.green("Starting the quiz in a moment..."))
+        time.sleep(2)
         while (self.questionsLeft > 0):
-            self.clear
+            self.clear()
             print("--------")
             print(f"progress: {self.getProgress()} % ")
             self.printProgressbar()
@@ -331,35 +335,92 @@ class QuizNotFound(Exception):
 
 
 class Colors:
-    HEADER = '\033[95m'
-    OKBLUE = '\033[94m'
-    OKGREEN = '\033[92m'
-    WARNING = '\033[93m'
-    FAIL = '\033[91m'
-    ENDC = '\033[0m'
-    BOLD = '\033[1m'
-    UNDERLINE = '\033[4m'
+
+    # https://godoc.org/github.com/whitedevops/colors
+    Reset = "\033[0m"
+
+    Bold       = "\033[1m"
+    Dim        = "\033[2m"
+    Underlined = "\033[4m"
+    Blink      = "\033[5m"
+    Reverse    = "\033[7m"
+    Hidden     = "\033[8m"
+
+    ResetBold       = "\033[21m"
+    ResetDim        = "\033[22m"
+    ResetUnderlined = "\033[24m"
+    ResetBlink      = "\033[25m"
+    ResetReverse    = "\033[27m"
+    ResetHidden     = "\033[28m"
+
+    Default      = "\033[39m"
+    Black        = "\033[30m"
+    Red          = "\033[31m"
+    Green        = "\033[32m"
+    Yellow       = "\033[33m"
+    Blue         = "\033[34m"
+    Magenta      = "\033[35m"
+    Cyan         = "\033[36m"
+    LightGray    = "\033[37m"
+    DarkGray     = "\033[90m"
+    LightRed     = "\033[91m"
+    LightGreen   = "\033[92m"
+    LightYellow  = "\033[93m"
+    LightBlue    = "\033[94m"
+    LightMagenta = "\033[95m"
+    LightCyan    = "\033[96m"
+    White        = "\033[97m"
+
+    BackgroundDefault      = "\033[49m"
+    BackgroundBlack        = "\033[40m"
+    BackgroundRed          = "\033[41m"
+    BackgroundGreen        = "\033[42m"
+    BackgroundYellow       = "\033[43m"
+    BackgroundBlue         = "\033[44m"
+    BackgroundMagenta      = "\033[45m"
+    BackgroundCyan         = "\033[46m"
+    BackgroundLightGray    = "\033[47m"
+    BackgroundDarkGray     = "\033[100m"
+    BackgroundLightRed     = "\033[101m"
+    BackgroundLightGreen   = "\033[102m"
+    BackgroundLightYellow  = "\033[103m"
+    BackgroundLightBlue    = "\033[104m"
+    BackgroundLightMagenta = "\033[105m"
+    BackgroundLightCyan    = "\033[106m"
+    BackgroundWhite        = "\033[107m"
 
     @staticmethod
     def blue(string):
-        return Colors.OKBLUE+str(string)+Colors.ENDC
+        return Colors.Blue+str(string)+Colors.Reset
 
     @staticmethod
     def green(string):
-        return Colors.OKGREEN+str(string)+Colors.ENDC
+        return Colors.Green+str(string)+Colors.Reset
 
     @staticmethod
     def yellow(string):
-        return Colors.WARNING+str(string)+Colors.ENDC
+        return Colors.Yellow+str(string)+Colors.Reset
 
     @staticmethod
     def red(string):
-        return Colors.FAIL+str(string)+Colors.ENDC
+        return Colors.Red+str(string)+Colors.Reset
 
     @staticmethod
     def bold(string):
-        return Colors.BOLD+str(string)+Colors.ENDC
+        return Colors.Bold+str(string)+Colors.Reset
     
+    @staticmethod
+    def highlight_green(string):
+        return Colors.BackgroundGreen+str(string)+Colors.Reset
+
+    @staticmethod
+    def highlight_lightgreen(string):
+        return Colors.BackgroundLightGreen+str(string)+Colors.Reset
+
+    @staticmethod
+    def highlight_gray(string):
+        return Colors.BackgroundDarkGray+str(string)+Colors.Reset
+
 
 
 if __name__ == "__main__":
@@ -369,8 +430,8 @@ if __name__ == "__main__":
     print("")
     parser = argparse.ArgumentParser(formatter_class=argparse.MetavarTypeHelpFormatter)
     parser.add_argument('quizname', type=str, help='name of the quiz you want to play')
-    parser.add_argument('--t', nargs='?', type=int, help='Threshold for passing the quiz in percent (rounded). Show success or failure message at the end.')
-    parser.add_argument('--l', nargs='?', type=int, help='limit the number of questions in a quiz. No effect if number of available question less then limit.')
+    parser.add_argument('--t', nargs='?', type=int, help='THRESHOLD for passing the quiz in percent (rounded). Show success or failure message at the end.')
+    parser.add_argument('--l', nargs='?', type=int, help='LIMIT the number of questions in a quiz. No effect if number of available question less then limit.')
     #parser.print_help()
     args = parser.parse_args()
     myquiz.playQuiz(args)
