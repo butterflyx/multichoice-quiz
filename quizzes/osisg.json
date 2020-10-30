@@ -1,0 +1,24 @@
+{
+	"meta" : {
+        "titel" : "OSISG - the Open Source Information Security Game",
+		"author" : "Jean-Christoph von Oertzen; osisg@jeanchristophvonoertzen.com",
+		"licence" : "CC BY 3.0 DE <https://creativecommons.org/licenses/by/3.0/de/>",
+		"homepage" : "https://jeanchristophvonoertzen.com",
+		"contributors" : []
+	},
+	"quiz" : {
+		"<enter chapter name>" : {
+			"<enter question id>" : {
+			"question" : "<question itself here>?",
+			"answers" : { 
+					"A" : "<not>",
+					"B" : "<always>",
+					"C" : "<four>",
+					"D" : "<alternatives>" 
+				},
+			"right" : ["B","D"]
+            }
+        }
+    }
+}
+            
