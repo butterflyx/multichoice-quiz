@@ -82,12 +82,12 @@ A quiz game for multiple choice tests
          ###      ###     ### ########  ######## ###################  
         """
 
-    def listGames(self):
+    def listGames(self) -> list:
         """ list all available quizzes in subfolder 'quizzes' """
         self.gamesList = glob.glob("./quizzes/*.json")
         return self.gamesList
 
-    def setGame(self, topic, limit):
+    def setGame(self, topic, limit) -> bool:
         """ load the raw quiz data into memory and prepare quiz to play """
         # https://careerkarma.com/blog/python-check-if-file-exists/
         if os.path.exists(topic) and (topic in self.gamesList):
@@ -136,7 +136,7 @@ A quiz game for multiple choice tests
 
         return True
 
-    def readGameFile(self):
+    def readGameFile(self) -> list:
         """ open and read the file with the quiz """
         try:
             with open(self.topic, "r") as json_file:
@@ -146,7 +146,7 @@ A quiz game for multiple choice tests
 
         return self.rawGame
 
-    def getQuestion(self):
+    def getQuestion(self) -> list:
         """ get one question out of the heap """
         # take the first question of the randomized array
         self.question = self.questions.pop(0)
@@ -154,21 +154,21 @@ A quiz game for multiple choice tests
         self.getQuestionsLeft()
         return self.question
 
-    def getQuestionsTotal(self):
+    def getQuestionsTotal(self) -> int:
         """ get total number of questions in quiz """
         return self.questionsTotal
 
-    def getQuestionsLeft(self):
+    def getQuestionsLeft(self) -> int:
         """ get number of questions in quiz not yet asked """
         self.questionsLeft = len(self.questions)
         return self.questionsLeft
 
-    def getProgress(self):
+    def getProgress(self) -> int:
         """ calculates the percentage of answered questions """
         p = int(round(100-((self.getQuestionsLeft() / self.getQuestionsTotal()) * 100)))
         return p
 
-    def printProgressbar(self, prog=None):
+    def printProgressbar(self, prog=None) -> None:
         """ visualize the percentage of answered questions """
         progress =  prog if prog != None else self.getProgress()
         barlevel = int(str(progress*0.1)[:1]) # get first digit
@@ -179,13 +179,13 @@ A quiz game for multiple choice tests
             print("[ "+Colors.highlight_green(("##"*barlevel))+Colors.highlight_gray(("  "*blanks))+" ]")
 
     # define clear function ; from https://www.geeksforgeeks.org/clear-screen-python/
-    def clear(self): 
+    def clear(self) -> None: 
         """ clears screen """
         # check and make call for specific operating system 
         _ = call('clear' if os.name =='posix' else 'cls') 
 
 
-    def askQuestion(self):
+    def askQuestion(self) -> list:
         """ prints the questions as well as possible answers and awaits input(s) """
         answers = []
         keys = []
@@ -250,7 +250,7 @@ A quiz game for multiple choice tests
         return self.threshold
 
 
-    def printResults(self):
+    def printResults(self) -> None:
         """ print the results of the quiz """
         qleft = self.getQuestionsLeft()+1 if self.breakFlag else self.getQuestionsLeft() # +1 for current question
         questionsAnswered = self.getQuestionsTotal() - qleft
@@ -286,7 +286,7 @@ A quiz game for multiple choice tests
 
         
     
-    def playQuiz(self, args):
+    def playQuiz(self, args) -> None:
         """ take the quiz """
         #print(f"quizname: {args.quizname} ; l: {args.l} ; t: {args.t}")
         self.listGames()
@@ -390,35 +390,35 @@ class Colors:
     BackgroundWhite        = "\033[107m"
 
     @staticmethod
-    def blue(string):
+    def blue(string) -> str:
         return Colors.Blue+str(string)+Colors.Reset
 
     @staticmethod
-    def green(string):
+    def green(string) -> str:
         return Colors.Green+str(string)+Colors.Reset
 
     @staticmethod
-    def yellow(string):
+    def yellow(string) -> str:
         return Colors.Yellow+str(string)+Colors.Reset
 
     @staticmethod
-    def red(string):
+    def red(string) -> str:
         return Colors.Red+str(string)+Colors.Reset
 
     @staticmethod
-    def bold(string):
+    def bold(string) -> str:
         return Colors.Bold+str(string)+Colors.Reset
     
     @staticmethod
-    def highlight_green(string):
+    def highlight_green(string) -> str:
         return Colors.BackgroundGreen+str(string)+Colors.Reset
 
     @staticmethod
-    def highlight_lightgreen(string):
+    def highlight_lightgreen(string) -> str:
         return Colors.BackgroundLightGreen+str(string)+Colors.Reset
 
     @staticmethod
-    def highlight_gray(string):
+    def highlight_gray(string) -> str:
         return Colors.BackgroundDarkGray+str(string)+Colors.Reset
 
 
