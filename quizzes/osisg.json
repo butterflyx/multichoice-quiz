@@ -1,22 +1,46 @@
 {
 	"meta" : {
-        "titel" : "OSISG - the Open Source Information Security Game",
+        "title" : "OSISG - the Open Source Information Security Game",
 		"author" : "Jean-Christoph von Oertzen; osisg@jeanchristophvonoertzen.com",
 		"licence" : "CC BY 3.0 DE <https://creativecommons.org/licenses/by/3.0/de/>",
 		"homepage" : "https://jeanchristophvonoertzen.com",
 		"contributors" : []
 	},
 	"quiz" : {
-		"<enter chapter name>" : {
-			"<enter question id>" : {
-			"question" : "<question itself here>?",
+		"Social Engineering" : {
+			"1" : {
+			"question" : "What are the most probable reasons that some SPAM emails are so obvious scammy and full of spelling errors?",
 			"answers" : { 
-					"A" : "<not>",
-					"B" : "<always>",
-					"C" : "<four>",
-					"D" : "<alternatives>" 
+					"A" : "SPAMers are dumb, so they don't know how to spell correctly after all",
+					"B" : "This has decided in the Bangladesh act on international email standard IFC 82001",
+					"C" : "This way SPAMers filter out critical people early in the funnel, so that the chance of victimize the remaining users is higher",
+					"D" : "There are no good email writers out there that might write SPAM emails as well" 
 				},
-			"right" : ["B","D"]
+			"right" : ["C"]
+            }
+		},
+		"concepts and architecture" : {
+			"1" : {
+			"question" : "Which statements about the von Neumann architecture are NOT correct?",
+			"answers" : { 
+					"A" : "Another name for the on Neumann architecture is Berkley architecture, derived from the university where it has been developed",
+					"B" : "Due to the ability to treat instructions as data it makes \"programs that write programs\" possible and prone to injection attacks",
+					"C" : "The shared bus between the program memory and data memory leads to a bottleneck between the CPU and the memory",
+					"D" : "Konrad Zuse also wrote in letters to von Neumann that machine instructions should be stored in the same storage used for data" 
+				},
+			"right" : ["A","D"]
+            }
+        },
+		"standards and laws" : {
+			"1" : {
+			"question" : "What is defined in the Wassenaar Agreement?",
+			"answers" : { 
+					"A" : "it defines the list of countries that may export computer chips",
+					"B" : "it's an international binding law on export controls for conventional arms",
+					"C" : "it defines an international cryptography agreement",
+					"D" : "if defines intrusion software as a 'Dual-Use Good'" 
+				},
+			"right" : ["C","D"]
             }
         }
     }

@@ -37,11 +37,11 @@ Easy as that!
 ### How to contribute
 
 **What's your most challaging information security question?**
-Please contribute it to the OSISG, to create the best open source information security quiz out there!
+Please contribute it to the OSISG, to create the most challenging open source information security quiz out there!
 
 Steps are easy:
 1. Just `git clone` the repo and add you question to the file `./quizzes/osisg.json`
-2. Choose the right chapter or create a new one if required
+2. Choose the right chapter for your question or create a new one if required
 3. the id of the question must be unique not necessarily numeric
 4. Please do keep the structure unmodified, so it will run with multichoice-quiz
 5. Add yourself to the contributors in the meta section with `your (nik)name; <email>`

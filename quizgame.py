@@ -174,9 +174,9 @@ A quiz game for multiple choice tests
         barlevel = int(str(progress*0.1)[:1]) # get first digit
         blanks = (10-barlevel)
         if barlevel < 5:
-            print("[ "+Colors.highlight_lightgreen(("##"*barlevel))+Colors.highlight_gray(("  "*blanks))+" ]")
+            print("[ "+Colors.highlight_lightgreen(("  "*barlevel))+Colors.highlight_gray(("  "*blanks))+" ]")
         else:
-            print("[ "+Colors.highlight_green(("##"*barlevel))+Colors.highlight_gray(("  "*blanks))+" ]")
+            print("[ "+Colors.highlight_green(("  "*barlevel))+Colors.highlight_gray(("  "*blanks))+" ]")
 
     # define clear function ; from https://www.geeksforgeeks.org/clear-screen-python/
     def clear(self) -> None: 
@@ -261,10 +261,11 @@ A quiz game for multiple choice tests
         if questionsAnswered > 0:
             percent = int(round(len(self.questionsRightAnswered)/questionsAnswered * 100))
             print(f"And you got {len(self.questionsRightAnswered)} of {questionsAnswered} right, which is a {percent}% percentage (minimum %: {self.threshold}).")
-            if percent >= self.threshold and self.threshold != None:
-                print(Colors.green(self.passedBanner))
-            else:
-                print(Colors.red(self.failedBanner))
+            if self.threshold != None:
+                if percent >= self.threshold:
+                    print(Colors.green(self.passedBanner))
+                else:
+                    print(Colors.red(self.failedBanner))
         print(f"")
         if self.questionsWrongAnswered != []:
             print(Colors.yellow("These questions should be reviewed:"))

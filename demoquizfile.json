@@ -1,6 +1,6 @@
 {
 	"meta" : {
-        "titel" : "<the title of the quiz, shown at the start of the quiz>",
+        "title" : "<the title of the quiz, shown at the start of the quiz>",
 		"author" : "<your name>; <your@email.address>",
 		"licence" : "<copyright or e.g. GNU public licence string>",
 		"homepage" : "<https://your.url.com>",
