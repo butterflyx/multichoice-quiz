@@ -9,6 +9,12 @@ Clone the git repo, move to the folder you cloned in and type `python3 quizgame.
 
 All quizzes must be put in the subfolder `./quizzes` as `.json` files.
 
+### Screenshots
+![multichoice-quiz](https://user-images.githubusercontent.com/5388631/99889512-4f0d1880-2c56-11eb-82d1-1e9a7fe3c45c.png)
+![multichoice-quiz_question](https://user-images.githubusercontent.com/5388631/99889513-4fa5af00-2c56-11eb-8c0d-08cf84386980.png)
+![multichoice-quiz_result](https://user-images.githubusercontent.com/5388631/99889515-503e4580-2c56-11eb-882d-da32d4d00236.png)
+
+
 **Try playing OSISG** (see below) and have fun! :-)
 
 ## available quizzes
