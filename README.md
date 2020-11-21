@@ -11,6 +11,21 @@ All quizzes must be put in the subfolder `./quizzes` as `.json` files.
 
 **Try playing OSISG** (see below) and have fun! :-)
 
+## available quizzes
+(made a compatible quiz yourself? Just let me know)
+
+### OSISG - the Open Source Information Security Game
+creating a quiz with the best information security questions out there for your entertainment and learning
+#### Source
+Part of multichoice-quiz. See below for more information
+
+
+### Grundschutz-Quiz
+Übungsfragen für den BSI-Grundschutz Praktiker
+#### Source
+https://github.com/butterflyx/GrundschutzQuiz
+
+
 ## roadmap
 
 - [x] [add] threshold in % for passing the quiz
@@ -18,7 +33,7 @@ All quizzes must be put in the subfolder `./quizzes` as `.json` files.
 - [ ] [add] learning mode: repeat a question before it is considered as answered correctly
 - [ ] [add] timer to simulate limited time in a RL test
 
-### credits
+### thank you
 
 - Diya Nag Chaudhury for inspiration of this project with her repo at https://github.com/cherryWood55/Quiz-Game/issues/
 
@@ -46,6 +61,6 @@ Steps are easy:
 4. Please do keep the structure unmodified, so it will run with multichoice-quiz
 5. Add yourself to the contributors in the meta section with `your (nik)name; <email>`
 6. double check the syntax of the JSON file e.g. with a linter
-7. do a pull request and it will be added to this repo, if conforming to the points above
+7. make a pull request and it will be added to this repo, if conforming to the points above
 
 Thank you for your support and please tell also your friends about OSISG!
