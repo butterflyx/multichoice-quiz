@@ -392,7 +392,7 @@ class Colors:
 
     @staticmethod
     def blue(string) -> str:
-        return Colors.Blue+str(string)+Colors.Reset
+        return Colors.LightBlue+str(string)+Colors.Reset
 
     @staticmethod
     def green(string) -> str:
@@ -433,6 +433,11 @@ if __name__ == "__main__":
     parser.add_argument('quizname', type=str, help='name of the quiz you want to play')
     parser.add_argument('--t', nargs='?', type=int, help='THRESHOLD for passing the quiz in percent (rounded). Show success or failure message at the end.')
     parser.add_argument('--l', nargs='?', type=int, help='LIMIT the number of questions in a quiz. No effect if number of available question less then limit.')
+    parser.add_argument('-i', action='store_true', help='print available quizzes and exit')
     #parser.print_help()
     args = parser.parse_args()
-    myquiz.playQuiz(args)
+    if args.i:
+        print(myquiz.listGames())
+        exit()
+    else:
+        myquiz.playQuiz(args)
