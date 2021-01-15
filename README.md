@@ -55,6 +55,23 @@ https://github.com/butterflyx/GrundschutzQuiz
 Install `multichoice-quiz` (see above) and type `python3 quizgame.py osisg`
 Easy as that! 
 
+## To save the output to a text file and review it later
+
+To output all the content to a file:
+
+python3 quizgame.py osisg | tee -a results.txt
+
+And to review it later:
+
+less --RAW-CONTROL-CHARS results.txt
+
+## To create your own JSON files
+
+You can edit the osisg.json file with a Vistual Studio Code, vi, or any text editor for your OS.
+
+To make it easier it you can use an "Smart JSON Editor" (for Mac only) or a similar one for Windows or Linux
+
+
 ### How to contribute
 
 **What's your most challaging information security question?**
